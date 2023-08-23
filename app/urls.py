@@ -5,15 +5,16 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home),
-    path('product-detail/', views.product_detail, name='product-detail'),
+    path('product-detail/<int:id>', views.product_detail, name='product-detail'),
     path('cart/', views.add_to_cart, name='add-to-cart'),
     path('buy/', views.buy_now, name='buy-now'),
     path('profile/', views.profile, name='profile'),
     path('address/', views.address, name='address'),
     path('orders/', views.orders, name='orders'),
     path('changepassword/', views.change_password, name='changepassword'),
-    path('mobile/', views.mobile, name='mobile'),
+    path('categories-page/<int:id>', views.categories_page, name='categories_page'),
     path('login/', views.login, name='login'),
     path('registration/', views.customerregistration, name='customerregistration'),
     path('checkout/', views.checkout, name='checkout'),
+    # path('base/', views.base_file, name='base_file'),
 ]+ static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)

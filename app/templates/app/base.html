@@ -38,7 +38,10 @@
                Electronics
              </a>
              <ul class="dropdown-menu" aria-labelledby="electronicsDropdown">
-               <li><a class="dropdown-item" href="{% url 'mobile' %}">Mobile</a></li>
+              {% for categori in categories %}
+                <li><a class="dropdown-item" href="{% url 'categories_page' categori.id %}">{{categori.name}}</a></li>
+              {% endfor %}
+               
                <li><a class="dropdown-item" href="#">Laptop</a></li>
              </ul>
            </li>
