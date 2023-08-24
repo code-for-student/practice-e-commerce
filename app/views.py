@@ -28,6 +28,18 @@ def categories_page(request,id):
  context = {'categories':categories,'products':products,'display_categori':display_categori}
  return render(request, 'app/categories_page.html',context)
 
+def filter_price(request, data, id):
+ print(data,id)
+ cosmetics_obj = Categories.objects.get(name=data)
+ if id == 1000:
+  filtered_product = Products.objects.filter(categories=cosmetics_obj.id).filter(discounted_price__gt=id)
+ else:
+    filtered_product = Products.objects.filter(categories=cosmetics_obj.id).filter(discounted_price__lt=1000)
+ categories = Categories.objects.all()
+ context = {'categories':categories,'products':filtered_product, 'display_categori':data}
+ return render(request, 'app/categories_page.html',context)
+
+
 def add_to_cart(request):
  return render(request, 'app/addtocart.html')
 
