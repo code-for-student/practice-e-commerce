@@ -1,6 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from . models import *
-
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from . forms import UserRegistrationForm
+from django.contrib import messages
 
 def home(request):
  dels_of_the_day_products = Products.objects.all()
@@ -39,6 +42,30 @@ def filter_price(request, data, id):
  context = {'categories':categories,'products':filtered_product, 'display_categori':data}
  return render(request, 'app/categories_page.html',context)
 
+def customerregistration(request):
+ if request.method == 'POST':
+  get_form_data = UserRegistrationForm(request.POST)
+  if get_form_data.is_valid():
+   get_form_data.save()
+   messages.success(request,'Your Registration complete successfully!')
+ form = UserRegistrationForm()
+ context = {'form':form}
+ return render(request,'app/customerregistration.html',context)
+
+def login_page(request):
+ if request.method == 'POST':
+  username = request.POST.get('username')
+  password = request.POST.get('password')
+  user = authenticate(username=username, password=password)
+  if user !=None:
+    login(request, user)
+    messages.success(request,'You have loggedin Succesfully !!')
+    return redirect('profile')
+   # user = authenticate(login_form)
+ else:
+  login_form = AuthenticationForm()
+ context = {'form':login_form}
+ return render(request, 'app/login.html', context)
 
 def add_to_cart(request):
  return render(request, 'app/addtocart.html')
@@ -61,11 +88,10 @@ def change_password(request):
 # def mobile(request):
 #  return render(request, 'app/mobile.html')
 
-def login(request):
- return render(request, 'app/login.html')
 
-def customerregistration(request):
- return render(request, 'app/customerregistration.html')
+
+# def customerregistration(request):
+#  return render(request, 'app/customerregistration.html')
 
 def checkout(request):
  return render(request, 'app/checkout.html')
