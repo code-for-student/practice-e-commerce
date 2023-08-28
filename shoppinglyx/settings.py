@@ -121,3 +121,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = 'images/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_REDIRECT_URL = '/profile/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
