@@ -110,7 +110,7 @@
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Sonam
+                  {{request.user.username}}
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
                   <li>
@@ -132,7 +132,7 @@
                 </ul>
               </li>
               <li class="nav-item mx-2">
-                <a href="{% url 'add-to-cart' %}" class="nav-link text-white"
+                <a href="{% url 'cart' %}" class="nav-link text-white"
                   ><span class="badge bg-danger">4</span> Cart
                 </a>
               </li>
@@ -192,5 +192,30 @@
     <script src="{% static 'app/js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'app/js/all.min.js' %}"></script>
     <script src="{% static 'app/js/myscript.js' %}"></script>
+    <script>
+       function productIncrease(id) {
+
+        var product_id = document.getElementById(id).value;
+        console.log("Hidden Input Value:", typeof(product_id));
+        console.log("Hidden Input Value:"+product_id);
+        
+        
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function(){
+          console.log('this is response')
+          var increase = document.getElementById("quantity")
+          console.log(xhr.responseText)
+          console.log(xhr.response)
+          
+        };
+
+        xhr.open("GET","/increase-cart/");
+        const data = {
+          productId : product_id
+        }
+        xhr.send(JSON.stringify(data))
+       }
+
+    </script>
   </body>
 </html>

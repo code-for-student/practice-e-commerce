@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from . models import *
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
-from . forms import UserRegistrationForm
+from . forms import UserRegistrationForm, CustomerForm
 from django.contrib import messages
+from django.views import View
 
 def home(request):
  dels_of_the_day_products = Products.objects.all()
@@ -28,7 +30,7 @@ def categories_page(request,id):
  products = Products.objects.filter(categories=id)
  categories = Categories.objects.all()
  display_categori = Categories.objects.get(id=id)
- context = {'categories':categories,'products':products,'display_categori':display_categori}
+ context = { 'categories':categories,'products':products,'display_categori':display_categori}
  return render(request, 'app/categories_page.html',context)
 
 def filter_price(request, data, id):
@@ -67,8 +69,78 @@ def login_page(request):
  context = {'form':login_form}
  return render(request, 'app/login.html', context)
 
-def add_to_cart(request):
- return render(request, 'app/addtocart.html')
+class CustomerProfileView(View):
+ def get(self,request):
+  form = CustomerForm()
+  context = {'form':form, 'active':'btn-primary'}
+  return render(request,'app/profile.html',context)
+ 
+ def post(self,request):
+  user = request.user
+  form = CustomerForm(request.POST)
+  if form.is_valid():
+   name = form.cleaned_data['name']
+   address = form.cleaned_data['address']
+   city = form.cleaned_data['city']
+   distric = form.cleaned_data['distric']
+   zip_code = form.cleaned_data['zip_code']
+   address_add = Customer(user=user,name=name,address=address,city=city,distric=distric,zip_code=zip_code)
+   address_add.save()
+   messages.success(request,'Address Added Successfully!!!')
+   form = CustomerForm()
+   context = {'form':form,'active':'btn-primary'}
+   return render(request,'app/profile.html',context)
+
+def address(request):
+ addresses = Customer.objects.filter(user=request.user)
+ context = {'addresses':addresses,'active':'btn-primary'}
+ return render(request, 'app/address.html',context)
+
+
+
+def add_to_cart(request,id):
+ user = request.user
+ product_ins = Products.objects.get(id=id)
+ add_to_cart = Cart(user=user,product=product_ins)
+ add_to_cart.save()
+ return redirect('cart')
+
+def show_cart(request):
+ user = request.user
+ products = Cart.objects.filter(user=user)
+ total_ammount = 0.00
+ total_payable = 0.00
+ shipping_charge = 00.00
+ if products:
+  shipping_charge = 70.00
+  for product in products:
+    temp_ammount = product.product.discounted_price * product.quantity
+    total_ammount += temp_ammount
+  total_payable = total_ammount+shipping_charge
+ context = {'products':products,'total_payable':total_payable,'shipping_charge':shipping_charge,'total_ammount':total_ammount}
+ return render(request, 'app/addtocart.html',context)
+
+def increase_cart(request):
+ if request.method == 'GET':
+  product_id = request.GET.get('productId')
+  product_ins= Products.objects.get(id=product_id)
+  product_from_cart = Cart.objects.filter(product=product_ins).filter(user=request.user)
+  product_from_cart.quantity =+ 1
+  product_from_cart.save()
+  product_price = product_from_cart.quantity * product_from_cart.product.discounted_price
+  total_ammount = 0.00
+  total_payable = 0.00
+  shipping_charge = 00.00
+  products = Cart.objects.filter(user=request.user)
+  for product in products:
+    temp_ammount = product.product.discounted_price * product.quantity
+    total_ammount += temp_ammount
+  total_payable = total_ammount+shipping_charge
+  data = {
+   
+  }
+  data = {"status":200}
+  return JsonResponse(data)
 
 def buy_now(request):
  return render(request, 'app/buynow.html')
@@ -76,8 +148,7 @@ def buy_now(request):
 def profile(request):
  return render(request, 'app/profile.html')
 
-def address(request):
- return render(request, 'app/address.html')
+
 
 def orders(request):
  return render(request, 'app/orders.html')

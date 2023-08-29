@@ -8,6 +8,7 @@ from django.contrib.auth.forms import (
 )
 from django.utils.translation import gettext, gettext_lazy as _
 from django.contrib.auth import password_validation
+from . models import Customer
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -84,3 +85,15 @@ class MySetPasswordForm(SetPasswordForm):
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password","class":"form-control"}),
     )
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ('name','address','city','distric','zip_code')
+        widgets = {
+            'name': forms.TextInput(attrs={'class':'form-control mb-3'}),
+            'address': forms.Textarea(attrs={'class':'form-control mb-3','rows':'5'}),
+            'city': forms.TextInput(attrs={'class':'form-control mb-3'}),
+            'distric': forms.TextInput(attrs={'class':'form-control mb-3'}),
+            'zip_code': forms.NumberInput(attrs={'class':'form-control mb-3'}),
+        }
